@@ -24,7 +24,9 @@ const getAllBooksHandler = (request, h) => {
       response.code(200);
 
       return response;
-    } else if (finished === '0') {
+    }
+
+    if (finished === '0') {
       const resFinishedBooks = books.filter((book) => book.finished === false);
 
       const response = h.response({
@@ -72,7 +74,9 @@ const getAllBooksHandler = (request, h) => {
       response.code(200);
 
       return response;
-    } else if (reading === '0') {
+    }
+
+    if (reading === '0') {
       const resReadingBooks = books.filter((book) => book.reading === false);
 
       const response = h.response({
@@ -103,34 +107,7 @@ const getAllBooksHandler = (request, h) => {
   const { name } = request.query;
 
   // cek query param nama
-  if (name === undefined || name === '') {
-    // cek data buku
-    if (books.length > 0) {
-      const response = h.response({
-        status: 'success',
-        data: {
-          books: books.map((book) => ({
-            id: book.id,
-            name: book.name,
-            publisher: book.publisher,
-          })),
-        },
-      });
-      response.code(200);
-
-      return response;
-    } else {
-      const response = h.response({
-        status: 'success',
-        data: {
-          books: books,
-        },
-      });
-      response.code(200);
-
-      return response;
-    }
-  } else {
+  if (!(name === undefined || name === '')) {
     const filteredBooks = books.filter((book) =>
       book.name.toLowerCase().includes(name.toLowerCase())
     );
@@ -160,6 +137,30 @@ const getAllBooksHandler = (request, h) => {
 
       return response;
     }
+  } else {
+    // cek data buku
+    if (books.length > 0) {
+      const response = h.response({
+        status: 'success',
+        data: {
+          books: books.map((book) => ({
+            id: book.id,
+            name: book.name,
+            publisher: book.publisher,
+          })),
+        },
+      });
+      response.code(200);
+
+      return response;
+    }
+
+    return {
+      status: 'success',
+      data: {
+        books: books,
+      },
+    };
   }
 };
 
@@ -181,15 +182,12 @@ const getByIdHandler = (request, h) => {
   }
 
   // jika buku ditemukan
-  const response = h.response({
+  return {
     status: 'success',
     data: {
       book: book,
     },
-  });
-  response.code(200);
-
-  return response;
+  };
 };
 
 // add a new book
