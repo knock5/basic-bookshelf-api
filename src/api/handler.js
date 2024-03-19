@@ -3,7 +3,59 @@ const books = require('./books');
 
 // get all books
 const getAllBooksHandler = (request, h) => {
-  if (books.length > 0) {
+  // cek status reading
+  const { reading } = request.query;
+
+  // filter berdasarkan status pembacaan
+  if (reading !== undefined) {
+    if (reading === '1') {
+      const resReadingBooks = books.filter((book) => book.reading === true);
+
+      const response = h.response({
+        status: 'success',
+        data: {
+          books: resReadingBooks.map((book) => ({
+            id: book.id,
+            name: book.name,
+            publisher: book.publisher,
+          })),
+        },
+      });
+      response.code(200);
+
+      return response;
+    } else if (reading === '0') {
+      const resReadingBooks = books.filter((book) => book.reading === false);
+
+      const response = h.response({
+        status: 'success',
+        data: {
+          books: resReadingBooks.map((book) => ({
+            id: book.id,
+            name: book.name,
+            publisher: book.publisher,
+          })),
+        },
+      });
+      response.code(200);
+
+      return response;
+    } else {
+      const response = h.response({
+        status: 'fail',
+        message: 'Nilai reading tidak valid',
+      });
+      response.code(400);
+
+      return response;
+    }
+  }
+
+  // cari berdasarkan query nama
+  const { name } = request.query;
+
+  // cek query param nama
+  if (name === undefined || name === '') {
     const response = h.response({
       status: 'success',
       data: {
@@ -17,17 +69,39 @@ const getAllBooksHandler = (request, h) => {
     response.code(200);
 
     return response;
+  } else {
+    const filteredBooks = books.filter((book) =>
+      book.name.toLowerCase().includes(name.toLowerCase())
+    );
+
+    // jika nama buku ditemukan
+    if (filteredBooks.length > 0) {
+      const response = h.response({
+        status: 'success',
+        data: {
+          books: filteredBooks.map((book) => ({
+            id: book.id,
+            name: book.name,
+            year: book.year,
+            author: book.author,
+            publisher: book.publisher,
+          })),
+        },
+      });
+      response.code(200);
+
+      return response;
+    } else {
+      // jika nama buku tidak ditemukan
+      const response = h.response({
+        status: 'fail',
+        message: 'Nama buku tidak ditemukan',
+      });
+      response.code(404);
+
+      return response;
+    }
   }
-
-  const response = h.response({
-    status: 'success',
-    data: {
-      books,
-    },
-  });
-  response.code(200);
-
-  return response;
 };
 
 // get by id book
