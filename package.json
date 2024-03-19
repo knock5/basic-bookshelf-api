@@ -1,7 +1,7 @@
 {
   "name": "bookshelf-api",
   "version": "1.0.0",
-  "description": "basic bookshelf api with hapi.js",
+  "description": "submission basic bookshelf api with hapi.js",
   "main": "index.js",
   "scripts": {
     "start": "node ./src/server.js",
